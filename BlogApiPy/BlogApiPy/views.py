@@ -3,7 +3,7 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, jsonify, request 
+from flask import render_template, jsonify, request,make_response
 from BlogApiPy import app
 from BlogMySqlDataService import BlogMySqlDataService 
 dataService=BlogMySqlDataService("root","xavi@1234")
@@ -39,8 +39,14 @@ def about():
         message='Your application description page.'
     )
 
-@app.route('/api/post/All')
+@app.route('/api/blogpost', methods = ['GET'])
 def getAll():
     allPost= dataService.getAllPost()
-    return jsonify(allPost)
+    return make_response(jsonify(allPost))
+
+@app.route('/api/blogpost', methods = ['POST'])
+def SavePost():
+    data = request.get_json()
+    dataService.savePost(data["title"],data["discription"],data["author"],data["publishDate"],data["picture"])
+    return make_response(jsonify('blog post created',"200"))
 
